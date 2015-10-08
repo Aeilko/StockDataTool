@@ -125,10 +125,10 @@ public class LinearRegression {
         BigDecimal svar0 = svar.divide(new BigDecimal(maxDays), mc).add(barX.multiply(barX).multiply(svar1));
         
         System.out.println("R^2\t\t\t= " + R2);
-        System.out.println("std error of beta_1\t= " + Math.sqrt(svar1.doubleValue()));
-        System.out.println("std error of beta_0\t= " + Math.sqrt(svar0.doubleValue()));
+        System.out.println("std error of Y\t\t= " + Math.sqrt(svar1.doubleValue()));
+        System.out.println("std error of X\t\t= " + Math.sqrt(svar0.doubleValue()));
         svar0 = svar.multiply(new BigDecimal(sumXSQ)).divide(new BigDecimal(maxDays).multiply(barXX), mc);
-        System.out.println("std error of beta_0\t= " + Math.sqrt(svar0.doubleValue()));
+        System.out.println("std error of X\t\t= " + Math.sqrt(svar0.doubleValue()));
         
         System.out.println("SSTO\t\t\t= " + barYY);
         System.out.println("SSE\t\t\t= " + rss);
@@ -137,4 +137,17 @@ public class LinearRegression {
 	
 	
 	// Queries
+	/**
+	 * @return The Y value of the Linear Regression
+	 */
+	public BigDecimal getY(){
+		return this.beta0;
+	}
+	
+	/**
+	 * @return The X value of the Linear Regression
+	 */
+	public BigDecimal getX(){
+		return this.beta1;
+	}
 }
