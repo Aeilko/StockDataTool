@@ -68,26 +68,6 @@ public class RequestData {
 		return getDataFromURL("http://ichart.yahoo.com/table.csv?s=" + id + "&a=" + startMonth + "&b=" + startDay + "&c=" + startYear + "&d=" + endMonth + "&e=" + endDay + "&f=" + endYear + "&g=" + mode + "&ignore=.csv");
 	}
 	
-	/**
-	 * Formats and saves the data to a csv file.
-	 * @param fileName The name of the file.
-	 */
-	public void saveData(String fileName){
-		PrintWriter p;
-		try {
-			String d = this.data;
-			//d = d.replace("\\n", "\n");
-			d = d.replace(',', ';');
-			d = d.replace('.', ',');
-			d = d.replaceAll("b'Date", "Date");
-					
-			p = new PrintWriter(new File(fileName));
-			p.println(d);
-			p.close();
-		}
-		catch (FileNotFoundException e) { e.printStackTrace(); }
-	}
-	
 	
 	// Queries
 	/**
@@ -96,16 +76,5 @@ public class RequestData {
 	 */
 	public String getData(){
 		return this.data;
-	}
-	
-	
-	//TODO
-	/**
-	 * Main for testing purposes
-	 */
-	public static void main(String[] args){
-		RequestData sd = new RequestData();
-		System.out.println(sd.getData("YHOO", 'd', 1, 9, 2015, 1, 10, 2015));
-		sd.saveData("data.csv");
 	}
 }
