@@ -110,6 +110,7 @@ public class LinearRegression {
         
         System.out.println("Y\t\t\t= " + beta1);
         System.out.println("X\t\t\t= " + beta0);
+        System.out.println("f(x)\t\t\t= " + beta1 + "x + " + beta0);
         
         this.df = this.maxDays-2;
         for(int i = 0; i < this.maxDays; i++){
