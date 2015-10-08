@@ -1,6 +1,9 @@
 package stockdata;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -28,6 +31,8 @@ public class Data {
 	private TreeMap<Date, Integer> volume;
 	// The adjusted closing price
 	private TreeMap<Date, BigDecimal> adjClose;
+	
+	private List<String> rawData;
 	
 	
 	// Constructor
@@ -91,6 +96,7 @@ public class Data {
 	 * @param data
 	 */
 	private void processData(List<String> data){
+		this.rawData = data;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 		for(String line: data){
 			String[] col = line.split(",");
@@ -123,6 +129,31 @@ public class Data {
 			newFormat.add(s);
 		}
 		processData(newFormat);
+	}
+	
+	/**
+	 * Saves the current data in csv format to the given file
+	 * @param file The filepath and name to which the data should be saved
+	 */
+	public void save(String file){
+		// Convert List<String> to a single string
+		String d = "";
+		for(String s: this.rawData){
+			d += s + "\n";
+		}
+		
+		PrintWriter p;
+		try {
+			// Transform string to Dutch CSV format
+			d = d.replace(',', ';');
+			d = d.replace('.', ',');
+			
+			// Save string to CSV file
+			p = new PrintWriter(new File(file));
+			p.println(d);
+			p.close();
+		}
+		catch (FileNotFoundException e) { e.printStackTrace(); }
 	}
 	
 	
