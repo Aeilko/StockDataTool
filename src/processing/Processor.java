@@ -1,7 +1,9 @@
 package processing;
 
+import java.math.BigDecimal;
+
 import stockdata.Data;
 
 public interface Processor {
-	public int process(Data data);
+	public BigDecimal process(Data data);
 }

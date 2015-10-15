@@ -6,7 +6,5 @@ public class Settings {
 	public static final int daysBefore = 120;
 	
 	// The number of days after the event from which the data should be collected
-	public static final int daysAfter = 120;
-	
-	
+	public static final int daysAfter = 10;
 }

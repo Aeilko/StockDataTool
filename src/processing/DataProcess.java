@@ -1,5 +1,6 @@
 package processing;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import stockdata.Data;
@@ -10,7 +11,7 @@ public class DataProcess implements Processor {
 	/**
 	 * Processes the given data.
 	 */
-	public int process(Data data) {
+	public BigDecimal process(Data data) {
 		LinearRegression lr = new LinearRegression(data.getAdjClose().size());
 		int x = 0;
 		for(Date d: data.getAdjClose().keySet()){
@@ -18,8 +19,7 @@ public class DataProcess implements Processor {
 			x++;
 		}
 		lr.calculate();
-		
-		return 0;
+		return lr.getY();
 	}
 
 }

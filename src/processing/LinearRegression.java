@@ -9,6 +9,7 @@ import java.math.RoundingMode;
  * Based on the code from: http://introcs.cs.princeton.edu/java/97data/LinearRegression.java.html
  * @author Aeilko Bos
  */
+@SuppressWarnings("unused")
 public class LinearRegression {
 	
 	// Maximum number of days
@@ -108,11 +109,11 @@ public class LinearRegression {
         this.beta1 = barXY.divide(barXX, mc);
         this.beta0 = barY.subtract(beta1.multiply(barX));
         
-        System.out.println("Y\t\t\t= " + beta1);
-        System.out.println("X\t\t\t= " + beta0);
-        System.out.println("f(x)\t\t\t= " + beta1 + "x + " + beta0);
+        //System.out.println("Y\t\t\t= " + beta1);
+        //System.out.println("X\t\t\t= " + beta0);
+        //System.out.println("f(x)\t\t\t= " + beta1 + "x + " + beta0);
         
-        this.df = this.maxDays-2;
+        /*this.df = this.maxDays-2;
         for(int i = 0; i < this.maxDays; i++){
         	this.fit = beta1.multiply(new BigDecimal(x[i])).add(beta0);
         	this.rss = rss.add(fit.subtract(y[i]).multiply(fit.subtract(y[i])));
@@ -122,17 +123,7 @@ public class LinearRegression {
         BigDecimal R2 = ssr.divide(barYY, mc);
         BigDecimal svar = rss.divide(new BigDecimal(df), mc);
         BigDecimal svar1 = svar.divide(barXX, mc);
-        BigDecimal svar0 = svar.divide(new BigDecimal(maxDays), mc).add(barX.multiply(barX).multiply(svar1));
-        
-        System.out.println("R^2\t\t\t= " + R2);
-        System.out.println("std error of Y\t\t= " + Math.sqrt(svar1.doubleValue()));
-        System.out.println("std error of X\t\t= " + Math.sqrt(svar0.doubleValue()));
-        svar0 = svar.multiply(new BigDecimal(sumXSQ)).divide(new BigDecimal(maxDays).multiply(barXX), mc);
-        System.out.println("std error of X\t\t= " + Math.sqrt(svar0.doubleValue()));
-        
-        System.out.println("SSTO\t\t\t= " + barYY);
-        System.out.println("SSE\t\t\t= " + rss);
-        System.out.println("SSR\t\t\t= " + ssr);
+        BigDecimal svar0 = svar.divide(new BigDecimal(maxDays), mc).add(barX.multiply(barX).multiply(svar1));*/
 	}
 	
 	
@@ -141,13 +132,13 @@ public class LinearRegression {
 	 * @return The Y value of the Linear Regression
 	 */
 	public BigDecimal getY(){
-		return this.beta0;
+		return this.beta1;
 	}
 	
 	/**
 	 * @return The X value of the Linear Regression
 	 */
 	public BigDecimal getX(){
-		return this.beta1;
+		return this.beta0;
 	}
 }
