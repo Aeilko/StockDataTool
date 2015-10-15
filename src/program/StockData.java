@@ -59,9 +59,9 @@ public class StockData {
 		BigDecimal difference = actual.subtract(mean);
 		System.out.println("Company:\t\t\t\t" + comp);
 		System.out.println("Attack Date:\t\t\t\t" + date);
-		System.out.println("Mean over " + Settings.daysBefore + " days\t\t\t" + mean);
-		System.out.println("Mean during attack over " + Settings.daysAfter + " days:\t" + actual);
-		System.out.println("Difference:\t\t\t\t" + difference);
+		System.out.println("Mean over " + Settings.daysBefore + " days\t\t\t" + mean.toPlainString().replace('.', ','));
+		System.out.println("Mean during attack over " + Settings.daysAfter + " days:\t\t" + actual.toPlainString().replace('.', ','));
+		System.out.println("Difference:\t\t\t\t" + difference.toPlainString().replace('.', ','));
 	}
 	
 	

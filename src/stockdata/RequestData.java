@@ -60,8 +60,8 @@ public class RequestData {
 	 */
 	public String getData(String id, char mode, int startDay, int startMonth, int startYear, int endDay, int endMonth, int endYear){
 		// startMonth and endMonth both start at 0 for some reason, this fixes it.
-		startMonth--;
-		endMonth--;
+		//startMonth--;
+		//endMonth--;
 		return getDataFromURL("http://ichart.yahoo.com/table.csv?s=" + id + "&a=" + startMonth + "&b=" + startDay + "&c=" + startYear + "&d=" + endMonth + "&e=" + endDay + "&f=" + endYear + "&g=" + mode + "&ignore=.csv");
 	}
 	
