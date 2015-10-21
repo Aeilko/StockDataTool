@@ -247,14 +247,4 @@ public class Data {
 	public BigDecimal getAdjClose(Date d){
 		return this.adjClose.get(d);
 	}
-	
-	
-	// TODO
-	/**
-	 * Testing purposes only
-	 */
-	public static void main(String[] args){
-		new Data("data.csv");
-		//new Data("YHOO", 'd', 1, 9, 2015, 1, 10, 2015);
-	}
 }

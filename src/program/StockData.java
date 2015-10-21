@@ -1,6 +1,8 @@
 package program;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,6 +17,8 @@ import stockdata.Data;
  * @author Aeilko Bos
  */
 public class StockData {
+	// Afronding van BigDecimals
+	public static final MathContext mc = new MathContext(10, RoundingMode.HALF_UP);
 	
 	public static void run(String comp, String date) throws ParseException{
 		
@@ -55,17 +59,25 @@ public class StockData {
 		// Process the stock data after the attack
 		BigDecimal actual = p.process(actualData);
 		
-		// Get the openin price of the day of the attack
-		actualData.getOpen(attack);
-		
-		
-		// Calculate the difference and show it.
+		// Calculate the difference
 		BigDecimal difference = actual.subtract(mean);
+		
+		// Calculate the percent difference based on the opening price on the day of the attack.
+		Calendar firstDay = attack;
+		BigDecimal attackOpen = null;
+		while(attackOpen == null){
+			attackOpen = actualData.getOpen(firstDay.getTime());
+			firstDay.add(Calendar.DATE, 1);
+		}
+		BigDecimal percentDifference = difference.divide(attackOpen, mc).multiply(new BigDecimal(100));
+		
+		// Show results
 		System.out.println("Company:\t\t\t\t" + comp);
 		System.out.println("Attack Date:\t\t\t\t" + date);
 		System.out.println("Mean over " + Settings.daysBefore + " days\t\t\t" + mean.toPlainString().replace('.', ','));
 		System.out.println("Mean during attack over " + Settings.daysAfter + " days:\t\t" + actual.toPlainString().replace('.', ','));
 		System.out.println("Difference:\t\t\t\t" + difference.toPlainString().replace('.', ','));
+		System.out.println("Percentual Difference:\t\t\t" + percentDifference + "%");
 	}
 	
 	
