@@ -77,7 +77,7 @@ public class StockData {
 		System.out.println("Mean over " + Settings.daysBefore + " days\t\t\t" + mean.toPlainString().replace('.', ','));
 		System.out.println("Mean during attack over " + Settings.daysAfter + " days:\t\t" + actual.toPlainString().replace('.', ','));
 		System.out.println("Difference:\t\t\t\t" + difference.toPlainString().replace('.', ','));
-		System.out.println("Percentual Difference:\t\t\t" + percentDifference + "%");
+		System.out.println("Percentual Difference:\t\t\t" + percentDifference.toPlainString().replace('.', ',') + "%");
 	}
 	
 	
