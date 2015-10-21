@@ -55,6 +55,10 @@ public class StockData {
 		// Process the stock data after the attack
 		BigDecimal actual = p.process(actualData);
 		
+		// Get the openin price of the day of the attack
+		actualData.getOpen(attack);
+		
+		
 		// Calculate the difference and show it.
 		BigDecimal difference = actual.subtract(mean);
 		System.out.println("Company:\t\t\t\t" + comp);
