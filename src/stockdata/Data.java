@@ -66,8 +66,9 @@ public class Data {
 	 * @param endDay The end day of the month.
 	 * @param endMonth The end month (1-12)
 	 * @param endYear The end year
+	 * @throws IOException 
 	 */
-	public Data(String id, char mode, int startDay, int startMonth, int startYear, int endDay, int endMonth, int endYear){
+	public Data(String id, char mode, int startDay, int startMonth, int startYear, int endDay, int endMonth, int endYear) throws IOException{
 		this.reset();
 		RequestData src = new RequestData();
 		String data = src.getData(id, mode, startDay, startMonth, startYear, endDay, endMonth, endYear);

@@ -1,5 +1,6 @@
 package program;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -43,41 +44,44 @@ public class StockData {
 		int endMonth = end.get(Calendar.MONTH);
 		int endYear = end.get(Calendar.YEAR);
 		
-		// Get stock data before the attack and save it
-		Data allData = new Data(comp, 'd', startDay, startMonth, startYear, attackDay, attackMonth, attackYear);
-		formatter = new SimpleDateFormat("yyyMMdd");
-		allData.save("data/" + comp + "_" + formatter.format(start.getTime()) + "-" + formatter.format(attack.getTime()) + ".csv");
-		
-		// Process the stock data before
-		DataProcess p = new DataProcess();
-		BigDecimal mean = p.process(allData);
-		
-		// Get stock data after the attack and save it
-		Data actualData = new Data(comp, 'd', attackDay, attackMonth, attackYear, endDay, endMonth, endYear);
-		actualData.save("data/" + comp + "_" + formatter.format(attack.getTime()) + "-" + formatter.format(end.getTime()) + ".csv");
-		
-		// Process the stock data after the attack
-		BigDecimal actual = p.process(actualData);
-		
-		// Calculate the difference
-		BigDecimal difference = actual.subtract(mean);
-		
-		// Calculate the percent difference based on the opening price on the day of the attack.
-		Calendar firstDay = attack;
-		BigDecimal attackOpen = null;
-		while(attackOpen == null){
-			attackOpen = actualData.getOpen(firstDay.getTime());
-			firstDay.add(Calendar.DATE, 1);
+		try {
+			// Get stock data before the attack and save it
+			Data allData = new Data(comp, 'd', startDay, startMonth, startYear, attackDay, attackMonth, attackYear);
+			formatter = new SimpleDateFormat("yyyMMdd");
+			allData.save("data/" + comp + "_" + formatter.format(start.getTime()) + "-" + formatter.format(attack.getTime()) + ".csv");
+			
+			// Process the stock data before
+			DataProcess p = new DataProcess();
+			BigDecimal mean = p.process(allData);
+			
+			// Get stock data after the attack and save it
+			Data actualData = new Data(comp, 'd', attackDay, attackMonth, attackYear, endDay, endMonth, endYear);
+			actualData.save("data/" + comp + "_" + formatter.format(attack.getTime()) + "-" + formatter.format(end.getTime()) + ".csv");
+			
+			// Process the stock data after the attack
+			BigDecimal actual = p.process(actualData);
+			
+			// Calculate the difference
+			BigDecimal difference = actual.subtract(mean);
+			
+			// Calculate the percent difference based on the opening price on the day of the attack.
+			Calendar firstDay = attack;
+			BigDecimal attackOpen = null;
+			while(attackOpen == null){
+				attackOpen = actualData.getOpen(firstDay.getTime());
+				firstDay.add(Calendar.DATE, 1);
+			}
+			BigDecimal percentDifference = difference.divide(attackOpen, mc).multiply(new BigDecimal(100));
+			
+			// Show results
+			System.out.println("Company:\t\t\t\t" + comp);
+			System.out.println("Attack Date:\t\t\t\t" + date);
+			System.out.println("Mean over " + Settings.daysBefore + " days\t\t\t" + mean.toPlainString().replace('.', ','));
+			System.out.println("Mean during attack over " + Settings.daysAfter + " days:\t\t" + actual.toPlainString().replace('.', ','));
+			System.out.println("Difference:\t\t\t\t" + difference.toPlainString().replace('.', ','));
+			System.out.println("Percentual Difference:\t\t\t" + percentDifference.toPlainString().replace('.', ',') + "%");
 		}
-		BigDecimal percentDifference = difference.divide(attackOpen, mc).multiply(new BigDecimal(100));
-		
-		// Show results
-		System.out.println("Company:\t\t\t\t" + comp);
-		System.out.println("Attack Date:\t\t\t\t" + date);
-		System.out.println("Mean over " + Settings.daysBefore + " days\t\t\t" + mean.toPlainString().replace('.', ','));
-		System.out.println("Mean during attack over " + Settings.daysAfter + " days:\t\t" + actual.toPlainString().replace('.', ','));
-		System.out.println("Difference:\t\t\t\t" + difference.toPlainString().replace('.', ','));
-		System.out.println("Percentual Difference:\t\t\t" + percentDifference.toPlainString().replace('.', ',') + "%");
+		catch(IOException e){ System.err.println("De stockdata kan niet worden opgehaald."); }
 	}
 	
 	

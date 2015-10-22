@@ -15,18 +15,18 @@ public class RequestData {
 	
 	// Constructor
 	public RequestData(){	}
-	public RequestData(String url){
+	public RequestData(String url) throws IOException{
 		getDataFromURL(url);
 	}
 	
 	
 	// Commands
 	/**
-	 * Requests and returns this stock data of the given url
+	 * Requests and returns this stock data of the given URL
 	 * @param url The URL from which the data is loaded.
 	 * @return The data in string format or an empty string if an error occured
 	 */
-	public String getDataFromURL(String urlString){
+	public String getDataFromURL(String urlString) throws IOException{
 		StringBuilder result = new StringBuilder();
 		try {
 		    URL url = new URL(urlString);
@@ -42,7 +42,7 @@ public class RequestData {
 		}
 		catch(ProtocolException e){ e.printStackTrace(); }
 		catch(MalformedURLException e) { e.printStackTrace(); }
-		catch(IOException e) { e.printStackTrace(); }
+		//catch(IOException e) { System.err.println("Hetvolgende bestand kon niet worden gevonden: '" + urlString + "'"); }
 	    return result.toString();
 	}
 	
@@ -57,8 +57,9 @@ public class RequestData {
 	 * @param endMonth The end month (1-12)
 	 * @param endYear The end year
 	 * @return String representation of the data
+	 * @throws IOException If the stock data is not available.
 	 */
-	public String getData(String id, char mode, int startDay, int startMonth, int startYear, int endDay, int endMonth, int endYear){
+	public String getData(String id, char mode, int startDay, int startMonth, int startYear, int endDay, int endMonth, int endYear) throws IOException{
 		// startMonth and endMonth both start at 0 for some reason, this fixes it.
 		//startMonth--;
 		//endMonth--;
