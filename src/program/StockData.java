@@ -80,6 +80,11 @@ public class StockData {
 			System.out.println("Mean during attack over " + Settings.daysAfter + " days:\t\t" + actual.toPlainString().replace('.', ','));
 			System.out.println("Difference:\t\t\t\t" + difference.toPlainString().replace('.', ','));
 			System.out.println("Percentual Difference:\t\t\t" + percentDifference.toPlainString().replace('.', ',') + "%");
+			//System.out.println(mean.toPlainString().replace('.', ',') + "\t" + actual.toPlainString().replace('.', ',') + "\t" + difference.toPlainString().replace('.', ',') + "\t" + percentDifference.toPlainString().replace('.', ',') + "%");
+			
+			// Log the results
+			Log l = new Log("log.txt");
+			l.write(comp + "\t" + mean.toPlainString().replace('.', ',') + "\t" + actual.toPlainString().replace('.', ',') + "\t" + difference.toPlainString().replace('.', ',') + "\t" + percentDifference.toPlainString().replace('.', ',') + "%");
 		}
 		catch(IOException e){ System.err.println("De stockdata kan niet worden opgehaald."); }
 	}
