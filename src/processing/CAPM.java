@@ -34,7 +34,6 @@ public class CAPM{
 		
 		// Calculate CAR
 		BigDecimal ER = RF.add(BETA.multiply(ERM.subtract(RF)));
-		System.out.println(ER);
 		return ER;
 	}
 	

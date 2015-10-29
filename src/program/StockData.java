@@ -121,41 +121,51 @@ public class StockData {
 			compData.save("data/" + comp + "_" + formatter.format(start.getTime()) + "-" + formatter.format(attack.getTime()) + ".csv");
 			marketData.save("data/" + market + "_" + formatter.format(start.getTime()) + "-" + formatter.format(attack.getTime()) + ".csv");
 			BigDecimal BETA = CAPM.calculateBETA(compData, marketData, attackDate);
-			System.out.println("BETA: " + BETA);
+			System.out.println("BETA:\t\t" + BETA);
 			
 			// Calculate ERM
 			BigDecimal startOpen = marketData.getOpen(start.getTime());
 			BigDecimal attackOpen = marketData.getOpen(attack.getTime());
 			BigDecimal ERM = attackOpen.subtract(startOpen).divide(startOpen, mc);
-			System.out.println("ERM: " + ERM);
+			System.out.println("ERM:\t\t" + ERM);
 			
 			
-			/*// Get Stock data over 5 days
+			// Get Stock data over 5 days
 			Data attackData = new Data(comp, 'd', attackDay, attackMonth, attackYear, endDay, endMonth, endYear);
 			attackData.save("data/" + comp + "_" + formatter.format(attack.getTime()) + "-" + formatter.format(end.getTime()) + ".csv");
 			
-			Date curDate = attackDate;
+			
+			Calendar cur = Calendar.getInstance();
+			cur.setTime(attackDate);
 			// Loop for 5 days
-			while(curDate.before(end.getTime())){
+			while(cur.getTime().before(end.getTime())){
 				// Read actual data
-				BigDecimal open = attackData.getOpen(curDate);
-				BigDecimal adjClose = attackData.getAdjClose(curDate);
+				BigDecimal open = attackData.getOpen(cur.getTime());
+				BigDecimal adjClose = attackData.getAdjClose(cur.getTime());
+				
+				// Skip days when the exchange is closed
+				if(open == null){
+					cur.add(Calendar.DATE, 1);
+					continue;
+				}
 				
 				// Calculate CAR data
-				BigDecimal car = CAPM.calculateCAR(curDate, BETA, ERM);
+				BigDecimal CAR = CAPM.calculateCAR(cur.getTime(), BETA, ERM);
 				
 				// Calculate difference
-				//TODO
+				BigDecimal meanDay = adjClose.subtract(open).divide(open, mc);
+				
+				// Show results
+				System.out.println("\n" + cur.getTime());
+				System.out.println("CAR:\t\t" + CAR);
+				System.out.println("Increase:\t" + meanDay);
+				System.out.println("Difference:\t" + meanDay.subtract(CAR));
 				
 				// Increase current date with one day.
-				Calendar cur = Calendar.getInstance();
-				cur.setTime(curDate);
 				cur.add(Calendar.DATE, 1);
-				curDate = cur.getTime();
-			}*/
+			}
 		}
-		//catch (AttackNotFoundException e){ System.err.println("Kan devolgende aanval niet vinden: " + comp + "(" + attackDate + ")"); }
-		//catch (ParseException e){ System.err.println("Kan één of meerdere datums niet lezen."); }
+		catch (ParseException e){ System.err.println("Kan één of meerdere datums niet lezen."); }
 		catch (IOException e) { System.err.println("Kan één of meerdere bestanden niet lezen."); };
 	}
 	
