@@ -1,3 +1,4 @@
 /bin/
 /data/*
 !/data/RFIrate.csv
+!/data/attacks.csv

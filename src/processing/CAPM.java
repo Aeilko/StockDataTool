@@ -32,6 +32,9 @@ public class CAPM{
 			}
 		}
 		
+		// RF is in percantages, should be in number
+		RF = RF.divide(new BigDecimal(100));
+		
 		// Calculate CAR
 		BigDecimal ER = RF.add(BETA.multiply(ERM.subtract(RF)));
 		return ER;
@@ -53,6 +56,10 @@ public class CAPM{
 		Calendar curDate = Calendar.getInstance();
 		curDate.setTime(d);
 		curDate.add(Calendar.YEAR, -1);
+		// Find the first day with data (= exchange was open)
+		while(compData.getAdjClose(curDate.getTime()) == null){
+			curDate.add(Calendar.DATE, 1);
+		}
 		BigDecimal lastComp = new BigDecimal(0);
 		BigDecimal curComp = compData.getAdjClose(curDate.getTime());
 		BigDecimal lastMarket = new BigDecimal(0);
@@ -62,7 +69,7 @@ public class CAPM{
 		// Loop over all days and plot the increase.
 		while(curDate.getTime().before(d)){
 			// Ignore days without data
-			if(marketData.getAdjClose(curDate.getTime()) == null){
+			if(compData.getAdjClose(curDate.getTime()) == null || marketData.getAdjClose(curDate.getTime()) == null){
 				curDate.add(Calendar.DATE, 1);
 				continue;
 			}

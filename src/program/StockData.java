@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import processing.CAPM;
 import processing.DataProcess;
@@ -22,8 +25,13 @@ public class StockData {
 	// Afronding van BigDecimals
 	public static final MathContext mc = new MathContext(10, RoundingMode.HALF_UP);
 	
+	/**
+	 * Calculates the difference using online Linear Regression
+	 * @param comp The handle of the company which was attacked
+	 * @param date The dat of the attack
+	 * @throws ParseException If the given date isn't in the right format (dd-MM-yyyy)
+	 */
 	public static void runLinear(String comp, String date) throws ParseException{
-		
 		// Create start and end days
 		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 		Date datum = formatter.parse(date);
@@ -91,13 +99,21 @@ public class StockData {
 	}
 	
 	
-	
+	/**
+	 * Calculates the difference using CAPM
+	 * @param comp The handle of the company which has been attacked
+	 * @param market The market on which the company is traded
+	 * @param date The date of the attack.
+	 * @throws ParseException If the given date isn't in the right format (dd-MM-yyyy)
+	 */
 	public static void runCAPM(String comp, String market, String date) throws ParseException{
 		// Read date
 		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 		Date attackDate = formatter.parse(date);
 		
 		try {
+			System.out.println("\nHandle:\t\t" + comp);
+			
 			// Calculate all dates
 			Calendar attack = Calendar.getInstance();
 			attack.setTime(attackDate);
@@ -125,7 +141,17 @@ public class StockData {
 			
 			// Calculate ERM
 			BigDecimal startOpen = marketData.getOpen(start.getTime());
-			BigDecimal attackOpen = marketData.getOpen(attack.getTime());
+			while(startOpen == null){
+				start.add(Calendar.DATE, 1);
+				startOpen = marketData.getOpen(start.getTime());
+			}
+			
+			Calendar attackWeekDay = (Calendar) attack.clone();
+			BigDecimal attackOpen = marketData.getOpen(attackWeekDay.getTime());
+			while(attackOpen == null){
+				attackWeekDay.add(Calendar.DATE, -1);
+				attackOpen = marketData.getOpen(attackWeekDay.getTime());
+			}
 			BigDecimal ERM = attackOpen.subtract(startOpen).divide(startOpen, mc);
 			System.out.println("ERM:\t\t" + ERM);
 			
@@ -166,23 +192,35 @@ public class StockData {
 			}
 		}
 		catch (ParseException e){ System.err.println("Kan één of meerdere datums niet lezen."); }
-		catch (IOException e) { System.err.println("Kan één of meerdere bestanden niet lezen."); };
+		catch (IOException e) { System.err.println("Kan één of meerdere bestanden niet lezen."); e.printStackTrace(); };
 	}
 	
 	
+	// Main method
 	public static void main(String[] args){
 		try {
-			if(args.length != 3){
-				System.err.println("Use: StockData [companyHandle] [marketHandle] [attackDate(Format: dd-mm-yyyy)]");
+			if(args.length < 1 || (!"auto".equals(args[0]) && args.length != 3)){
+				System.err.println("Use: StockData [auto] || ([companyHandle] [marketHandle] [attackDate(Format: dd-mm-yyyy)])");
 			}
 			else{
-				String comp = args[0];
-				String market = args[1];
-				String date = args[2];
-				//StockData.runLinear(comp, date);
-				StockData.runCAPM(comp, market, date);
+				if(args[0].equals("auto")){
+					System.out.println("Automatic, loading attacks from /data/attacks.csv");
+					List<String> lines = Files.readAllLines(Paths.get("data/attacks.csv"));
+					for(String line: lines){
+						String[] cols = line.split(";");
+						StockData.runCAPM(cols[0], cols[1], cols[2]);
+					}
+				}
+				else{
+					String comp = args[0];
+					String market = args[1];
+					String date = args[2];
+					//StockData.runLinear(comp, date);
+					StockData.runCAPM(comp, market, date);
+				}
 			}
 		}
 		catch (ParseException e) { System.err.println("Datum niet in juiste format"); }
+		catch (IOException e) { System.err.println("Kan attacks.csv niet openen"); }
 	}
 }
