@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import processing.CAPM;
 import processing.DataProcess;
 import stockdata.Data;
 
@@ -21,7 +22,7 @@ public class StockData {
 	// Afronding van BigDecimals
 	public static final MathContext mc = new MathContext(10, RoundingMode.HALF_UP);
 	
-	public static void run(String comp, String date) throws ParseException{
+	public static void runLinear(String comp, String date) throws ParseException{
 		
 		// Create start and end days
 		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
@@ -90,15 +91,86 @@ public class StockData {
 	}
 	
 	
+	
+	public static void runCAPM(String comp, String market, String date) throws ParseException{
+		// Read date
+		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+		Date attackDate = formatter.parse(date);
+		
+		try {
+			// Calculate all dates
+			Calendar attack = Calendar.getInstance();
+			attack.setTime(attackDate);
+			int attackDay = attack.get(Calendar.DATE);
+			int attackMonth = attack.get(Calendar.MONTH);
+			int attackYear = attack.get(Calendar.YEAR);
+			Calendar start = (Calendar) attack.clone();
+			start.add(Calendar.YEAR, -1);
+			int startDay = start.get(Calendar.DATE);
+			int startMonth = start.get(Calendar.MONTH);
+			int startYear = start.get(Calendar.YEAR);
+			Calendar end = (Calendar) attack.clone();
+			end.add(Calendar.DATE, 5);
+			int endDay = end.get(Calendar.DATE);
+			int endMonth = end.get(Calendar.MONTH);
+			int endYear = end.get(Calendar.YEAR);
+			
+			// Calculate BETA
+			Data compData = new Data(comp, 'd', startDay, startMonth, startYear, attackDay, attackMonth, attackYear);
+			Data marketData = new Data(market, 'd', startDay, startMonth, startYear, attackDay, attackMonth, attackYear);
+			compData.save("data/" + comp + "_" + formatter.format(start.getTime()) + "-" + formatter.format(attack.getTime()) + ".csv");
+			marketData.save("data/" + market + "_" + formatter.format(start.getTime()) + "-" + formatter.format(attack.getTime()) + ".csv");
+			BigDecimal BETA = CAPM.calculateBETA(compData, marketData, attackDate);
+			System.out.println("BETA: " + BETA);
+			
+			// Calculate ERM
+			BigDecimal startOpen = marketData.getOpen(start.getTime());
+			BigDecimal attackOpen = marketData.getOpen(attack.getTime());
+			BigDecimal ERM = attackOpen.subtract(startOpen).divide(startOpen, mc);
+			System.out.println("ERM: " + ERM);
+			
+			
+			/*// Get Stock data over 5 days
+			Data attackData = new Data(comp, 'd', attackDay, attackMonth, attackYear, endDay, endMonth, endYear);
+			attackData.save("data/" + comp + "_" + formatter.format(attack.getTime()) + "-" + formatter.format(end.getTime()) + ".csv");
+			
+			Date curDate = attackDate;
+			// Loop for 5 days
+			while(curDate.before(end.getTime())){
+				// Read actual data
+				BigDecimal open = attackData.getOpen(curDate);
+				BigDecimal adjClose = attackData.getAdjClose(curDate);
+				
+				// Calculate CAR data
+				BigDecimal car = CAPM.calculateCAR(curDate, BETA, ERM);
+				
+				// Calculate difference
+				//TODO
+				
+				// Increase current date with one day.
+				Calendar cur = Calendar.getInstance();
+				cur.setTime(curDate);
+				cur.add(Calendar.DATE, 1);
+				curDate = cur.getTime();
+			}*/
+		}
+		//catch (AttackNotFoundException e){ System.err.println("Kan devolgende aanval niet vinden: " + comp + "(" + attackDate + ")"); }
+		//catch (ParseException e){ System.err.println("Kan één of meerdere datums niet lezen."); }
+		catch (IOException e) { System.err.println("Kan één of meerdere bestanden niet lezen."); };
+	}
+	
+	
 	public static void main(String[] args){
 		try {
-			if(args.length != 2){
-				System.err.println("Use: StockData [companyHandle] [attackDate(Format: dd-mm-yyyy)]");
+			if(args.length != 3){
+				System.err.println("Use: StockData [companyHandle] [marketHandle] [attackDate(Format: dd-mm-yyyy)]");
 			}
 			else{
 				String comp = args[0];
-				String date = args[1];
-				StockData.run(comp, date);
+				String market = args[1];
+				String date = args[2];
+				//StockData.runLinear(comp, date);
+				StockData.runCAPM(comp, market, date);
 			}
 		}
 		catch (ParseException e) { System.err.println("Datum niet in juiste format"); }

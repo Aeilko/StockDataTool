@@ -23,12 +23,12 @@ public class Data {
 	private TreeMap<Date, BigDecimal> open;
 	// The highest price on a given day
 	private TreeMap<Date, BigDecimal> high;
-	// The lowwest price on a given day
+	// The lowest price on a given day
 	private TreeMap<Date, BigDecimal> low;
 	// The closing price on a given day
 	private TreeMap<Date, BigDecimal> close;
 	// The total volume of stocks traded
-	private TreeMap<Date, Integer> volume;
+	private TreeMap<Date, Long> volume;
 	// The adjusted closing price
 	private TreeMap<Date, BigDecimal> adjClose;
 	
@@ -88,7 +88,7 @@ public class Data {
 		this.high = new TreeMap<Date, BigDecimal>();
 		this.low = new TreeMap<Date, BigDecimal>();
 		this.close = new TreeMap<Date, BigDecimal>();
-		this.volume = new TreeMap<Date, Integer>();
+		this.volume = new TreeMap<Date, Long>();
 		this.adjClose = new TreeMap<Date, BigDecimal>();
 	}
 	
@@ -109,7 +109,7 @@ public class Data {
 					this.high.put(datum, new BigDecimal(col[2]));
 					this.low.put(datum, new BigDecimal(col[3]));
 					this.close.put(datum, new BigDecimal(col[4]));
-					this.volume.put(datum, Integer.parseInt(col[5]));
+					this.volume.put(datum, Long.parseLong(col[5]));
 					this.adjClose.put(datum, new BigDecimal(col[6]));
 				}
 				catch (ParseException e) { System.err.println("Kon de datum '" + col[0] + "' niet parsen"); }
@@ -222,7 +222,7 @@ public class Data {
 	/**
 	 * @return Map with the traded volume
 	 */
-	public TreeMap<Date, Integer> getVolume(){
+	public TreeMap<Date, Long> getVolume(){
 		return this.volume;
 	}
 	
@@ -230,7 +230,7 @@ public class Data {
 	 * @param d The day of which the traded volume is requested
 	 * @return The opening price on the given day
 	 */
-	public Integer getVolume(Date d){
+	public Long getVolume(Date d){
 		return this.volume.get(d);
 	}
 	

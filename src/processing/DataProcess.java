@@ -15,7 +15,7 @@ public class DataProcess implements Processor {
 		LinearRegression lr = new LinearRegression(data.getAdjClose().size());
 		int x = 0;
 		for(Date d: data.getAdjClose().keySet()){
-			lr.addDay(x, data.getAdjClose(d));
+			lr.addPoint(new BigDecimal(x), data.getAdjClose(d));
 			x++;
 		}
 		lr.calculate();

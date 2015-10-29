@@ -13,11 +13,11 @@ import java.math.RoundingMode;
 public class LinearRegression {
 	
 	// Maximum number of days
-	int maxDays;
+	int maxPoints;
 	// Current day
-	int curDay;
+	int curPoint;
 	// Array containing the x values
-	int[] x;
+	BigDecimal[] x;
 	// Array containing the y values
 	BigDecimal[] y;
 	
@@ -25,8 +25,8 @@ public class LinearRegression {
 	MathContext mc = new MathContext(10, RoundingMode.HALF_UP);
 	
 	// Calculation variables
-	private double sumX;
-	private double sumXSQ;
+	private BigDecimal sumX;
+	private BigDecimal sumXSQ;
 	private BigDecimal sumY;
 	private BigDecimal barX;
 	private BigDecimal barY;
@@ -44,11 +44,11 @@ public class LinearRegression {
 	// Constructor
 	/**
 	 * Initializes a new Linear Regression graph
-	 * @param dagen Number of days
-	 * @require dagen > 0
+	 * @param points Number of points
+	 * @require points > 0
 	 */
-	public LinearRegression(int dagen){
-		this.maxDays = dagen;
+	public LinearRegression(int points){
+		this.maxPoints = points;
 		this.reset();
 	}
 	
@@ -58,11 +58,11 @@ public class LinearRegression {
 	 * Resets the data
 	 */
 	private void reset(){
-		this.x = new int[this.maxDays];
-		this.y = new BigDecimal[this.maxDays];
-		this.curDay = 0;
-		this.sumX = 0;
-		this.sumXSQ = 0;
+		this.x = new BigDecimal[this.maxPoints];
+		this.y = new BigDecimal[this.maxPoints];
+		this.curPoint = 0;
+		this.sumX = new BigDecimal(0);
+		this.sumXSQ = new BigDecimal(0);
 		this.sumY = new BigDecimal(0);
 		this.barX = new BigDecimal(0);
 		this.barY = new BigDecimal(0);
@@ -82,24 +82,24 @@ public class LinearRegression {
 	 * @param x The day of the y value
 	 * @param y The value
 	 */
-	public void addDay(int x, BigDecimal y){
-		this.x[curDay] = x;
-		this.y[curDay] = y;
-		sumX += x;
-        sumXSQ += x*x;
+	public void addPoint(BigDecimal x, BigDecimal y){
+		this.x[curPoint] = x;
+		this.y[curPoint] = y;
+		sumX = sumX.add(x);
+        sumXSQ = sumXSQ.add(x.multiply(x));
         sumY = sumY.add(y);
-        curDay++;
+        curPoint++;
 	}
 	
 	/**
 	 * Performs calculations
 	 */
 	public void calculate(){
-		this.barX = new BigDecimal(this.sumX).divide(new BigDecimal(this.maxDays));
-		this.barY = sumY.divide(new BigDecimal(this.maxDays), mc);
+		this.barX = this.sumX.divide(new BigDecimal(this.maxPoints), mc);
+		this.barY = sumY.divide(new BigDecimal(this.maxPoints), mc);
 		
-        for (int i = 0; i < this.maxDays; i++) {
-        	BigDecimal tmp1 = new BigDecimal(x[i]).subtract(barX);
+        for (int i = 0; i < this.maxPoints; i++) {
+        	BigDecimal tmp1 = x[i].subtract(barX);
         	BigDecimal tmp2 = this.y[i].subtract(barY);
         	this.barXX = barXX.add(tmp1.multiply(tmp1));
         	this.barYY = barYY.add(tmp2.multiply(tmp2));
