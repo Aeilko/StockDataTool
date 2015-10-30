@@ -107,13 +107,15 @@ public class StockData {
 	 * @throws ParseException If the given date isn't in the right format (dd-MM-yyyy)
 	 */
 	public static void runCAPM(String comp, String market, String date) throws ParseException{
+		// Save result
+		String file = "results.csv";
+		String resultLine = comp + ";" + market + ";" + date;
+		
 		// Read date
 		DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 		Date attackDate = formatter.parse(date);
 		
 		try {
-			System.out.println("\nHandle:\t\t" + comp);
-			
 			// Calculate all dates
 			Calendar attack = Calendar.getInstance();
 			attack.setTime(attackDate);
@@ -137,7 +139,7 @@ public class StockData {
 			compData.save("data/" + comp + "_" + formatter.format(start.getTime()) + "-" + formatter.format(attack.getTime()) + ".csv");
 			marketData.save("data/" + market + "_" + formatter.format(start.getTime()) + "-" + formatter.format(attack.getTime()) + ".csv");
 			BigDecimal BETA = CAPM.calculateBETA(compData, marketData, attackDate);
-			System.out.println("BETA:\t\t" + BETA);
+			resultLine += ";" + BETA;
 			
 			// Calculate ERM
 			BigDecimal startOpen = marketData.getOpen(start.getTime());
@@ -153,7 +155,7 @@ public class StockData {
 				attackOpen = marketData.getOpen(attackWeekDay.getTime());
 			}
 			BigDecimal ERM = attackOpen.subtract(startOpen).divide(startOpen, mc);
-			System.out.println("ERM:\t\t" + ERM);
+			resultLine += ";" + ERM;
 			
 			
 			// Get Stock data over 5 days
@@ -172,6 +174,7 @@ public class StockData {
 				// Skip days when the exchange is closed
 				if(open == null){
 					cur.add(Calendar.DATE, 1);
+					resultLine += ";;;";
 					continue;
 				}
 				
@@ -182,14 +185,18 @@ public class StockData {
 				BigDecimal meanDay = adjClose.subtract(open).divide(open, mc);
 				
 				// Show results
-				System.out.println("\n" + cur.getTime());
-				System.out.println("CAR:\t\t" + CAR);
-				System.out.println("Increase:\t" + meanDay);
-				System.out.println("Difference:\t" + meanDay.subtract(CAR));
+				resultLine += ";" + CAR;
+				resultLine += ";" + meanDay;
+				resultLine += ";" + meanDay.subtract(CAR);
 				
 				// Increase current date with one day.
 				cur.add(Calendar.DATE, 1);
 			}
+			
+			// Save the results
+			System.out.println(resultLine);
+			Log l = new Log(file);
+			l.write(resultLine);
 		}
 		catch (ParseException e){ System.err.println("Kan één of meerdere datums niet lezen."); }
 		catch (IOException e) { System.err.println("Kan één of meerdere bestanden niet lezen."); e.printStackTrace(); };
